@@ -13,17 +13,13 @@ router.get('/', function (req, res) {
 })
 
 router.post('/', function (req, res) {
-  const def = new Document()
-  def.owner = 'Default ovner'
-  def.authors.push('Defaul author')
-  def.title = 'Default title'
-  def.content = 'Default content'
-  def.save(error => {
-    if (error) {
-      res.send('Unable to add default document')
-    }
-  })
-  res.send('default user added')
+  Document.create(req.body)
+        .then(doc => {
+          res.send(doc)
+        })
+        .catch(error => {
+          res.send('Unable to add user document')
+        })
 })
 
 module.exports = router
