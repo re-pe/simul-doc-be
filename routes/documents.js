@@ -2,7 +2,6 @@ var express = require('express')
 var router = express.Router()
 var Document = require('../models/document')
 
-/* GET documents listing. */
 router.get('/', function (req, res) {
   Document.find({}, (err, records) => {
     if (err) {
@@ -17,8 +16,18 @@ router.post('/', function (req, res) {
         .then(doc => {
           res.send(doc)
         })
-        .catch(error => {
-          res.send('Unable to add user document')
+        .catch(err => {
+          res.send('Unable to add user document\nError:'+err)
+        })
+})
+
+router.delete('/:docId', (req, res) => {
+  Document.findByIdAndRemove(req.params.docId)
+        .then(doc => {
+          res.send(doc)
+        })
+        .catch(err => {
+          res.send('Unable to remove document\nError:'+err)
         })
 })
 
