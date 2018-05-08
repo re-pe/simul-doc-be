@@ -2,43 +2,36 @@ var express = require('express')
 var router = express.Router()
 var Document = require('../models/document')
 
-router.get('/', function (req, res) {
-  Document.find({}, (err, records) => {
-    if (err) {
-      res.send('error when trying get documents')
-    }
-    res.send(records)
-  })
+router.get('/', function (req, res, next) {
+  Document.find({})
+        .then(found => {
+          res.send(found)
+        })
+        .catch(next)
 })
 
-router.post('/', function (req, res) {
+router.post('/', function (req, res, next) {
   Document.create(req.body)
-        .then(doc => {
-          res.send(doc)
+        .then(added => {
+          res.send(added)
         })
-        .catch(err => {
-          res.send('Unable to add user document\nError:' + err)
-        })
+        .catch(next)
 })
 
-router.delete('/:docId', (req, res) => {
+router.delete('/:docId', (req, res, next) => {
   Document.findByIdAndRemove(req.params.docId)
-        .then(doc => {
-          res.send(doc)
+        .then(deleted => {
+          res.send(deleted)
         })
-        .catch(err => {
-          res.send('Unable to remove document\nError:' + err)
-        })
+        .catch(next)
 })
 
-router.put('/:docId', (req, res) => {
-  Document.findByIdAndUpdate(req.params.docId, req.body, {new: true})//{new: true}to retun updated instead original
-        .then(doc => {
-          res.send(doc)
+router.put('/:docId', (req, res, next) => {
+  Document.findByIdAndUpdate(req.params.docId, req.body, { new: true })
+        .then(updated => {
+          res.send(updated)
         })
-        .catch(err => {
-          res.send('Unable to update document\nError:' + err)
-        })
+        .catch(next)
 })
 
 module.exports = router
