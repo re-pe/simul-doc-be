@@ -17,7 +17,7 @@ router.post('/', function (req, res) {
           res.send(doc)
         })
         .catch(err => {
-          res.send('Unable to add user document\nError:'+err)
+          res.send('Unable to add user document\nError:' + err)
         })
 })
 
@@ -27,7 +27,17 @@ router.delete('/:docId', (req, res) => {
           res.send(doc)
         })
         .catch(err => {
-          res.send('Unable to remove document\nError:'+err)
+          res.send('Unable to remove document\nError:' + err)
+        })
+})
+
+router.put('/:docId', (req, res) => {
+  Document.findByIdAndUpdate(req.params.docId, req.body, {new: true})//{new: true}to retun updated instead original
+        .then(doc => {
+          res.send(doc)
+        })
+        .catch(err => {
+          res.send('Unable to update document\nError:' + err)
         })
 })
 
