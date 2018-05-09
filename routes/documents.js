@@ -32,7 +32,7 @@ router.post('/', function (req, res, next) {
 router.delete('/:docId', (req, res, next) => {
   Document.findByIdAndRemove(req.params.docId)
         .then(deleted => {
-          res.send(deleted)
+          res.status(204).send()
         })
         .catch(next)
 })

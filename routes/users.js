@@ -32,7 +32,7 @@ router.get('/:usrId', function(req, res, next) {
 router.delete('/:usrId', (req, res, next) => {
   User.findByIdAndRemove(req.params.usrId)
         .then(deleted => {
-          res.send(deleted);
+          res.status(204).send();
         })
         .catch(next);
 })
