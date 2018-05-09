@@ -1,11 +1,12 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var Schema = mongoose.Schema
+const Schema = mongoose.Schema,
+    ObjectId = Schema.Types.ObjectId;
 
-var DocumentSchema = new Schema(
+const DocumentSchema = new Schema(
   {
-    owner: { type: String, required: true },
-    authors: { type: [String] },
+    owner: { type: ObjectId, required: true , ref: 'User' },
+    authors: [{ type: ObjectId , ref: 'User' }],
     title: { type: String },
     content: { type: String }
   },
