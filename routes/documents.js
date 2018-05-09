@@ -1,6 +1,6 @@
-var express = require('express')
-var router = express.Router()
-var Document = require('../models/document')
+const express = require('express')
+const router = express.Router()
+const Document = require('../models/document')
 
 /* GET documents listing. */
 router.get('/', function (req, res) {
@@ -11,6 +11,19 @@ router.get('/', function (req, res) {
     res.send(records)
   })
 })
+
+router.get('/:docId', function (req, res, next) {
+  Document.findById(req.params.docId)
+    .populate('owner')
+    .populate( 'authors')
+    .then(record => {
+      console.log(record);
+      res.send(record);
+    })
+    .catch(next)
+})
+
+
 
 router.post('/', function (req, res) {
   Document.create(req.body)
