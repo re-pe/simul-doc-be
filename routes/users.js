@@ -8,26 +8,41 @@ router.get('/', function(req, res, next) {
     .then(records => {
       res.send(records);
     })
-    .catch(next)
+    .catch(next);
 
 });
+
+router.post('/', function (req, res, next) {
+  User.create(req.body)
+    .then(added => {
+      res.send(added);
+    })
+    .catch(next);
+})
 
 router.get('/:usrId', function(req, res, next) {
   User.findById(req.params.usrId)
     .then(record => {
       res.send(record);
     })
-    .catch(next)
+    .catch(next);
 
 });
 
-router.post('/', function (req, res, next) {
-  User.create(req.body)
-    .then(usr => {
-      res.send(usr)
-    })
-    .catch(next);
+router.delete('/:usrId', (req, res, next) => {
+  User.findByIdAndRemove(req.params.usrId)
+        .then(deleted => {
+          res.send(deleted);
+        })
+        .catch(next);
 })
 
+router.put('/:usrId', (req, res, next) => {
+  Document.findByIdAndUpdate(req.params.usrId, req.body, { new: true })
+        .then(updated => {
+          res.send(updated);
+        })
+        .catch(next);
+})
 
 module.exports = router;
