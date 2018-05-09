@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var User = require('../models/user')
+const express = require('express');
+const router = express.Router();
+const User = require('../models/user')
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -12,12 +12,21 @@ router.get('/', function(req, res, next) {
 
 });
 
+router.get('/:usrId', function(req, res, next) {
+  User.findById(req.params.usrId)
+    .then(record => {
+      res.send(record);
+    })
+    .catch(next)
+
+});
+
 router.post('/', function (req, res, next) {
   User.create(req.body)
-        .then(usr => {
-          res.send(usr)
-        })
-        .catch(next);
+    .then(usr => {
+      res.send(usr)
+    })
+    .catch(next);
 })
 
 
