@@ -1,8 +1,8 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var Schema = mongoose.Schema
+const Schema = mongoose.Schema
 
-var UserSchema = new Schema(
+const UserSchema = new Schema(
   {
     firstName : {type: String, required: true},
     lastName: { type: String, required: true },

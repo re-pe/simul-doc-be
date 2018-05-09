@@ -1,6 +1,6 @@
-var express = require('express')
-var router = express.Router()
-var Document = require('../models/document')
+const express = require('express')
+const router = express.Router()
+const Document = require('../models/document')
 
 router.get('/', function (req, res, next) {
   Document.find({})
@@ -8,6 +8,17 @@ router.get('/', function (req, res, next) {
           res.send(found)
         })
         .catch(next)
+})
+
+router.get('/:docId', function (req, res, next) {
+  Document.findById(req.params.docId)
+    .populate('owner')
+    .populate( 'authors')
+    .then(record => {
+      console.log(record);
+      res.send(record);
+    })
+    .catch(next)
 })
 
 router.post('/', function (req, res, next) {
@@ -21,7 +32,7 @@ router.post('/', function (req, res, next) {
 router.delete('/:docId', (req, res, next) => {
   Document.findByIdAndRemove(req.params.docId)
         .then(deleted => {
-          res.send(deleted)
+          res.sendStatus(204);
         })
         .catch(next)
 })
