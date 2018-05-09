@@ -1,6 +1,8 @@
-const express = require('express');
-const router = express.Router();
+const Joi = require('joi');
+const app = require('express');
+const router = app.Router();
 const User = require('../models/user')
+const validator = require('express-joi-validation')({})
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -12,13 +14,24 @@ router.get('/', function(req, res, next) {
 
 });
 
-router.post('/', function (req, res, next) {
-  User.create(req.body)
-    .then(added => {
-      res.send(added);
-    })
-    .catch(next);
+const querySchema = Joi.object({
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  email: Joi.string().required(),
+  password: Joi.string().required()
 })
+
+router.post(
+  '/', 
+  validator.query(querySchema), 
+  function (req, res, next) {
+    User.create(req.body)
+      .then(added => {
+        res.send(added);
+      })
+      .catch(next);
+  }
+);
 
 router.get('/:usrId', function(req, res, next) {
   User.findById(req.params.usrId)

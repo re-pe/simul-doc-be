@@ -1,6 +1,7 @@
-const express = require('express')
-const router = express.Router()
-const Document = require('../models/document')
+const Joi = require('joi');
+const express = require('express');
+const router = express.Router();
+const Document = require('../models/document');
 
 router.get('/', function (req, res, next) {
   Document.find({})
