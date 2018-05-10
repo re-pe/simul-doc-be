@@ -8,6 +8,10 @@ const validator = require('express-joi-validation')({})
 router.get('/', function(req, res, next) {
   User.find({})
     .then(records => {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cache-Control");
+  
       res.send(records);
     })
     .catch(next);
@@ -17,7 +21,7 @@ router.get('/', function(req, res, next) {
 const querySchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
-  email: Joi.string().required(),
+  email: Joi.string().email().required(),
   password: Joi.string().required()
 })
 
