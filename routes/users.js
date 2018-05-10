@@ -8,24 +8,39 @@ const validator = require('express-joi-validator');
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   User.find({})
+    console.log(records)
     .then(records => {
       res.send(records);
     })
+    console.log(next)
     .catch(next);
 
 });
 
-const querySchema = {body: {
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  email: Joi.string().email().required(),
-  password: Joi.string().required()
-}};
+const DocumentSchema = new Schema(
+  {
+    owner: { type: ObjectId, required: true , ref: 'User' },
+    authors: [{ type: ObjectId , ref: 'User' }],
+    title: { type: String },
+    content: { type: String }
+  },
+  {
+    timestamps: true
+  }
+)
 
-router.post(
-  '/', 
-  validator(querySchema),
-  function (req, res, next) {
+const bodySchema = {
+  body: {
+    firstName: Joi.string().min(1).required(),
+    lastName: Joi.string().min(1).required(),
+    email: Joi.string().email().required(),
+    password: Joi.string()
+                .regex(/[a-z0-9!@#$%^&*_-]/).min(6).max(12)
+                .required()
+  }
+};
+
+router.post('/', validator(bodySchema), (req, res, next) => {
     User.create(req.body)
       .then(added => {
         res.send(added);
@@ -34,29 +49,32 @@ router.post(
   }
 );
 
-router.get('/:usrId', function(req, res, next) {
+// router.get('/id::usrId;abc::abc', (req, res, next) => {
+//   res.send({ id: req.params.usrId, abc:req.params.abc});
+// });
+
+router.get('/:usrId', (req, res, next) => {
   User.findById(req.params.usrId)
     .then(record => {
       res.send(record);
     })
     .catch(next);
-
 });
 
 router.delete('/:usrId', (req, res, next) => {
   User.findByIdAndRemove(req.params.usrId)
-        .then(deleted => {
-          res.sendStatus(204);
-        })
-        .catch(next);
+    .then(deleted => {
+      res.sendStatus(204);
+    })
+    .catch(next);
 })
 
-router.put('/:usrId', (req, res, next) => {
-  Document.findByIdAndUpdate(req.params.usrId, req.body, { new: true })
-        .then(updated => {
-          res.send(updated);
-        })
-        .catch(next);
-})
+router.put('/:usrId', validator(bodySchema), (req, res, next) => {
+  User.findByIdAndUpdate(req.params.usrId, req.body, { new: true })
+    .then(updated => {
+      res.send(updated);
+    })
+    .catch(next);
+});
 
 module.exports = router;
