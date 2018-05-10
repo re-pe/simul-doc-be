@@ -3,37 +3,32 @@ const app = require('express');
 // const cors = require('cors')
 const router = app.Router();
 const User = require('../models/user')
-const validator = require('express-joi-validation')({})
+const validator = require('express-joi-validator');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   User.find({})
     .then(records => {
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cache-Control");
       res.send(records);
     })
     .catch(next);
 
 });
 
-const querySchema = Joi.object({
+const querySchema = {body: {
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().required()
-})
+}};
 
 router.post(
   '/', 
-  validator.query(querySchema), 
+  validator(querySchema),
   function (req, res, next) {
+    console.log(req.body);
     User.create(req.body)
       .then(added => {
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cache-Control");
         res.send(added);
       })
       .catch(next);
