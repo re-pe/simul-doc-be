@@ -17,16 +17,6 @@ router.get('/', function(req, res, next) {
 
 });
 
-const bodySchema = {
-  body: {
-    firstName: Joi.string().min(1).required(),
-    lastName: Joi.string().min(1).required(),
-    email: Joi.string().email().required(),
-    password: Joi.string()
-                .regex(/[a-z0-9!@#$%^&*_-]/).min(6).max(12)
-                .required()
-  }
-};
 
 router.post('/', validator(bodySchema), (req, res, next) => {
     User.create(req.body)

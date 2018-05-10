@@ -1,9 +1,10 @@
-const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
 const Document = require('../models/document');
+const bodySchema = require('./validators/validators.js);
+const validator = require('express-joi-validator');
 
-router.get('/', function (req, res, next) {
+router.get('/', (req, res, next) => {
   Document.find({})
         .then(found => {
           res.send(found)
@@ -11,7 +12,7 @@ router.get('/', function (req, res, next) {
         .catch(next)
 })
 
-router.get('/:docId', function (req, res, next) {
+router.get('/:docId', (req, res, next) => {
   Document.findById(req.params.docId)
     .populate('owner')
     .populate( 'authors')
@@ -22,7 +23,7 @@ router.get('/:docId', function (req, res, next) {
     .catch(next)
 })
 
-router.post('/', function (req, res, next) {
+router.post('/', validator(bodySchema), (req, res, next) => {
   Document.create(req.body)
         .then(added => {
           res.send(added)
