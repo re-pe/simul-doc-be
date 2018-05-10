@@ -17,18 +17,6 @@ router.get('/', function(req, res, next) {
 
 });
 
-const DocumentSchema = new Schema(
-  {
-    owner: { type: ObjectId, required: true , ref: 'User' },
-    authors: [{ type: ObjectId , ref: 'User' }],
-    title: { type: String },
-    content: { type: String }
-  },
-  {
-    timestamps: true
-  }
-)
-
 const bodySchema = {
   body: {
     firstName: Joi.string().min(1).required(),
