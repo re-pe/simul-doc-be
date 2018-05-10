@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const app = require('express');
+// const cors = require('cors')
 const router = app.Router();
 const User = require('../models/user')
 const validator = require('express-joi-validation')({})
@@ -11,7 +12,6 @@ router.get('/', function(req, res, next) {
       res.header("Access-Control-Allow-Origin", "*");
       res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
       res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cache-Control");
-  
       res.send(records);
     })
     .catch(next);
@@ -31,6 +31,9 @@ router.post(
   function (req, res, next) {
     User.create(req.body)
       .then(added => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cache-Control");
         res.send(added);
       })
       .catch(next);
