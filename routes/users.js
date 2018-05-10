@@ -26,7 +26,6 @@ router.post(
   '/', 
   validator(querySchema),
   function (req, res, next) {
-    console.log(req.body);
     User.create(req.body)
       .then(added => {
         res.send(added);
