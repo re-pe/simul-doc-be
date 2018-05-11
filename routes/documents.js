@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Document = require('../models/document');
-const bodySchema = require('./validators/validators.js);
+const DocumentBodySchema = require('./validators/validators').DocumentBodySchema;
 const validator = require('express-joi-validator');
 
 router.get('/', (req, res, next) => {
@@ -23,7 +23,7 @@ router.get('/:docId', (req, res, next) => {
     .catch(next)
 })
 
-router.post('/', validator(bodySchema), (req, res, next) => {
+router.post('/', validator(DocumentBodySchema), (req, res, next) => {
   Document.create(req.body)
         .then(added => {
           res.send(added)
@@ -39,7 +39,7 @@ router.delete('/:docId', (req, res, next) => {
         .catch(next)
 })
 
-router.put('/:docId', (req, res, next) => {
+router.put('/:docId', validator(DocumentBodySchema), (req, res, next) => {
   Document.findByIdAndUpdate(req.params.docId, req.body, { new: true })
         .then(updated => {
           res.send(updated)
