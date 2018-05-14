@@ -3,7 +3,7 @@ const app = require('express');
 // const cors = require('cors')
 const router = app.Router();
 const User = require('../models/user')
-const { UserBodySchema } = require('./validators/validators');
+const { UserBodySchema, UserBodyLoginSchema } = require('./validators/validators');
 const validator = require('express-joi-validator');
 
 /* GET users listing. */
@@ -20,7 +20,7 @@ router.get('/', function(req, res, next) {
 router.post('/', validator(UserBodySchema), (req, res, next) => {
     User.create(req.body)
       .then(added => {
-        res.send(added);
+        res.redirect('/profile');
       })
       .catch(next);
   }

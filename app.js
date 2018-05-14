@@ -1,27 +1,36 @@
-const createError = require('http-errors')
-const express = require('express')
-const path = require('path')
-const cookieParser = require('cookie-parser')
-const logger = require('morgan')
+const createError = require('http-errors');
+const express = require('express');
+const session = require('express-session');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 const cors = require('cors');
 
-const indexRouter = require('./routes/index')
-const usersRouter = require('./routes/users')
-const documentsRouter = require('./routes/documents')
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const documentsRouter = require('./routes/documents');
+const userProfile = require('./routes/profile');
+const userLogin = require('./routes/login');
 
 // Set up mongoose connection
-const mongoose = require('mongoose')
-const mongoDB = 'mongoDb://localhost/simul'
-mongoose.connect(mongoDB)
+const mongoose = require('mongoose');
+const mongoDB = 'mongoDb://localhost/auth-tut';
+mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise
 const db = mongoose.connection
-db.on('error', console.error.bind(console, 'MongoDB connection error:'))
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-const app = express()
+const app = express();
 
 // // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'pug');
+
+app.use(session({
+  secret: 'work hard',
+  resave: true,
+  saveUninitialized: false
+}));
 
 app.use('*', cors());
 app.use(logger('dev'))
@@ -33,6 +42,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', indexRouter)
 app.use('/users', usersRouter)
 app.use('/documents', documentsRouter);
+app.use('/profile', userProfile);
+app.use('/login', userLogin);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
