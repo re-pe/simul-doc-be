@@ -42,7 +42,7 @@ router.delete('/:usrId', (req, res, next) => {
     .catch(next);
 })
 
-router.put('/:usrId', validator(UserBodySchema), (req, res, next) => {
+router.put('/:usrId', validator(UserBodySchema, ), (req, res, next) => {
   User.findByIdAndUpdate(req.params.usrId, req.body, { new: true })
     .then(updated => {
       res.send(updated);
