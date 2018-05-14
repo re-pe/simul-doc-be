@@ -1,8 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const Document = require('../models/document')
+const express = require('express');
+const router = express.Router();
+const Document = require('../models/document');
+const {DocumentBodySchema} = require('./validators/validators');
+const validator = require('express-joi-validator');
 
-router.get('/', function (req, res, next) {
+router.get('/', (req, res, next) => {
   Document.find({})
         .then(found => {
           res.send(found)
@@ -10,7 +12,7 @@ router.get('/', function (req, res, next) {
         .catch(next)
 })
 
-router.get('/:docId', function (req, res, next) {
+router.get('/:docId', (req, res, next) => {
   Document.findById(req.params.docId)
     .populate('owner')
     .populate( 'authors')
@@ -21,7 +23,7 @@ router.get('/:docId', function (req, res, next) {
     .catch(next)
 })
 
-router.post('/', function (req, res, next) {
+router.post('/', validator(DocumentBodySchema), (req, res, next) => {
   Document.create(req.body)
         .then(added => {
           res.send(added)
@@ -37,7 +39,7 @@ router.delete('/:docId', (req, res, next) => {
         .catch(next)
 })
 
-router.put('/:docId', (req, res, next) => {
+router.put('/:docId', validator(DocumentBodySchema), (req, res, next) => {
   Document.findByIdAndUpdate(req.params.docId, req.body, { new: true })
         .then(updated => {
           res.send(updated)
