@@ -30,8 +30,8 @@ const UserArrayValidator = Joi.array().items(UserValidator)
 const UserBodySchema = {
     body: Joi.alternatives().try(UserValidator, UserArrayValidator)
 };
-  
+
 module.exports = {
-    UserBodySchema, 
+    UserBodySchema,
     DocumentBodySchema
 }
