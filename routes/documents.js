@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Document = require('../models/document');
-const DocumentBodySchema = require('./validators/validators').DocumentBodySchema;
+const {DocumentBodySchema} = require('./validators/validators');
 const validator = require('express-joi-validator');
 
 router.get('/', (req, res, next) => {

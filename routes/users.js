@@ -3,17 +3,15 @@ const app = require('express');
 // const cors = require('cors')
 const router = app.Router();
 const User = require('../models/user')
-const UserBodySchema = require('./validators/validators').UserBodySchema;
+const { UserBodySchema } = require('./validators/validators');
 const validator = require('express-joi-validator');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   User.find({})
-    console.log(records)
     .then(records => {
       res.send(records);
     })
-    console.log(next)
     .catch(next);
 
 });
@@ -27,10 +25,6 @@ router.post('/', validator(UserBodySchema), (req, res, next) => {
       .catch(next);
   }
 );
-
-// router.get('/id::usrId;abc::abc', (req, res, next) => {
-//   res.send({ id: req.params.usrId, abc:req.params.abc});
-// });
 
 router.get('/:usrId', (req, res, next) => {
   User.findById(req.params.usrId)
