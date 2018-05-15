@@ -16,8 +16,6 @@ const UserSchema = new Schema(
     }
 )
 
-//const salt = "Tai - tekstas druskai";
-
 UserSchema.pre('save', function(next) {
     const user = this;
     bcrypt.hash(user.password, saltRounds, function (err, hash){

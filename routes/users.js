@@ -1,6 +1,5 @@
 const Joi = require('joi');
 const app = require('express');
-// const cors = require('cors')
 const router = app.Router();
 const User = require('../models/user')
 const { UserBodySchema, UserBodyLoginSchema } = require('./validators/validators');
