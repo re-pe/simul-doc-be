@@ -1,6 +1,7 @@
 const createError = require("http-errors");
 const express = require("express");
 const session = require("express-session");
+//const MongoDBStore = require("connect-mongodb-session")(session);
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -19,8 +20,18 @@ const mongoDB = "mongoDb://localhost/auth-tut";
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
-//const MongoStore = require('connect-mongo')(session);
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
+// const store = new MongoDBStore({
+//   uri: "mongodb://localhost/session_test",
+//   databaseName: "session_test",
+//   collection: "mySessions"
+// });
+
+// Catch errors
+// store.on("error", function(error) {
+//   assert.ifError(error);
+//   assert.ok(false);
+// });
 
 const app = express();
 
@@ -31,10 +42,12 @@ const app = express();
 //tutorial
 app.use(
   session({
-    secret: "keyboard cat",
+    secret: "vowel either object copper",
+    signed: true,
+    cookie: { secure: true },
+    //    store: store,
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }
+    saveUninitialized: true
   })
 );
 
@@ -42,7 +55,7 @@ app.use("*", cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser("secret"));
 
 //tutorial
 // serve static files from template

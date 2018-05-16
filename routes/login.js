@@ -16,7 +16,8 @@ router.post("/", validator(UserBodyLoginSchema), (req, res, next) => {
       return next(err);
     } else {
       req.session.userId = user._id;
-      res.send({ "message": "User is authenticated." });
+      res.cookie("simul-doc", user._id, { signed: true, httpOnly: true });
+      res.send({ message: "User is authenticated." });
       //return res.redirect("/profile");
     }
   }).catch(next);

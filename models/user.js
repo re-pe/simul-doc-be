@@ -28,9 +28,9 @@ const UserSchema = new Schema(
   }
 );
 
-UserSchema.static("authenticate", function(email, password, callback) {
+UserSchema.static("authenticate", function(username, password, callback) {
   return this.findOne({
-    email: email
+    email: username
   }).then(function(user) {
     if (!user) {
       return callback(
