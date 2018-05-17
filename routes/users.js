@@ -19,9 +19,11 @@ router.get("/", function(req, res, next) {
 });
 
 router.post("/", validator(UserBodySchema), (req, res, next) => {
+  console.log(JSON.stringify(req.body));
   User.create(req.body)
     .then(added => {
-      res.redirect("/profile");
+      res.send({ message: "User sucesfully created!" });
+      //res.redirect("/login");
     })
     .catch(next);
 });

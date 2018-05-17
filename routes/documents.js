@@ -6,6 +6,8 @@ const validator = require("express-joi-validator");
 
 router.get("/", (req, res, next) => {
   Document.find({})
+    .populate("owner")
+    .populate("authors")
     .then(found => {
       res.send(found);
     })
