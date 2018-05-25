@@ -33,7 +33,6 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 //   assert.ok(false);
 // });
 
-
 const app = express();
 
 // // view engine setup
@@ -86,7 +85,7 @@ app.use(function(err, req, res, next) {
   res.send(err);
 });
 
-const initDb = require("./_init/_init.js");
+const initDb = require("./seeds/seed.development.js");
 initDb(db);
 
 module.exports = app;
