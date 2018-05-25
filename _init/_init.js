@@ -53,7 +53,7 @@ const initDb = async function(db) {
     .then(userPromiseList => Promise.all(userPromiseList))
     .then(userIdList => {
       console.log(
-        "userIdList(" + userIdList.length + ") => [" + userIdList + "]"
+        `userIdList(${userIdList.length}) => [${userIdList}]`
       );
       return userIdList;
     })
@@ -72,7 +72,7 @@ const initDb = async function(db) {
     .then(docObjectList => makeArrayOfPromises(Document, docObjectList))
     .then(docPromiseList => Promise.all(docPromiseList))
     .then(docIdList =>
-      console.log("docIdList(" + docIdList.length + ") => [" + docIdList + "]")
+      console.log(`docIdList(${docIdList.length}) => [${docIdList}]`)
     );
 };
 

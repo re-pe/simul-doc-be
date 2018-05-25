@@ -53,7 +53,7 @@ async function initDb(db) {
 
   const userPromiseList = await makeUserPromiseList;
   const userIdList = await Promise.all(userPromiseList);
-  console.log("userIdList(" + userIdList.length + ") => [" + userIdList + "]");
+  console.log(`userIdList(${userIdList.length}) => [${userIdList}]`);
 
   let makeDocPromiseList = Promise.resolve(userIdList)
     .then(userIdList =>
@@ -72,9 +72,7 @@ async function initDb(db) {
 
   let docPromiseList = await makeDocPromiseList;
   let docIdList = await Promise.all(docPromiseList);
-  console.log(
-    "docIdList(" + docIdList.length + ") => [" + docIdList + "]"
-  );
+  console.log(`docIdList(${docIdList.length}) => [${docIdList}]`);
 }
 
 module.exports = initDb;
