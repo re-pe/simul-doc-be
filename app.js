@@ -16,7 +16,7 @@ const userLogout = require("./routes/logout");
 
 // Set up mongoose connection
 const mongoose = require("mongoose");
-const mongoDB = "mongoDb://localhost/auth-tut";
+const mongoDB = "mongoDb://localhost/simul-doc";
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
