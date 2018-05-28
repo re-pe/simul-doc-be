@@ -86,6 +86,6 @@ app.use(function(err, req, res, next) {
 });
 
 const initDb = require("./seeds/seed.development.js");
-initDb(db);
+initDb(db).then();
 
 module.exports = app;

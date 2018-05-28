@@ -4,41 +4,47 @@ const Document = require("../models/document");
 const NUMBER_OF_USERS_TO_CREATE = 5;
 const NUMBER_OF_DOCUMENTS_TO_CREATE = 20;
 
-const createUserFromTemplate = (index) => JSON.parse(`{
+/**
+ * Creates user data object from template literal
+ *
+ * @param {number} index
+ * @return {Object} Object with data to create item
+ * in database users collection
+ */
+const createUserFromTemplate = index =>
+  JSON.parse(`{
   "firstName": "Firstname${index}",
   "lastName": "Lastname${index}",
   "email": "email${index}@gmail.com",
   "password": "abcdef${index}"
-}`)
+}`);
 
-const createDocumentFromTemplate = (userId, index) => JSON.parse(`{
+/**
+ * Creates user data object from template litteral
+ *
+ * @param {_id} userId
+ * @param {number} index
+ * @return {Object} Object with data to create item
+ * in database documents collection
+ */
+const createDocumentFromTemplate = (userId, index) =>
+  JSON.parse(`{
   "owner": "${userId}",
   "authors": ["${userId}"],
   "title": "title${index}",
   "content": "content ${index}"
-}`)
+}`);
 
 /**
- * Creates items in database
- * @param {model} model
- * @params {Object} data
+ * Creates initials item set in the database
+ *
+ * @param {mongoose.connection} db
+ * @return {Object} Object with ids of items
+ * users and documents collections in the database
  */
-
-const createItemsInDatabase = (model, data) =>
-  data.map(item =>
-    model
-    .create(item)
-    .then(created => {
-      return created._id;
-    })
-    .catch(err => {
-      return null;
-    })
-  );
-
 async function initDb(db) {
-  let result;
-  await Promise.resolve(db.dropDatabase())
+  let result = {};
+  result["userIdList"] = await Promise.resolve(db.dropDatabase())
     .then(() =>
       new Array(NUMBER_OF_USERS_TO_CREATE).fill(null).map((_, index) => {
         return {
@@ -49,12 +55,11 @@ async function initDb(db) {
     .then(userDataList =>
       userDataList.map(item => createUserFromTemplate(item.index))
     )
-    .then(userObjectList => createItemsInDatabase(User, userObjectList))
-    .then(userPromiseList => Promise.all(userPromiseList))
-    .then(userIdList => {
-      result = { userIdList };
-      return userIdList;
-    })
+    .then(userObjectList => User.create(userObjectList))
+    .then(created => created.map(user => user._id))
+    .catch(err => null);
+
+  result["documentIdList"] = await Promise.resolve(result["userIdList"])
     .then(userIdList =>
       new Array(NUMBER_OF_DOCUMENTS_TO_CREATE).fill(null).map((_, index) => {
         return {
@@ -64,12 +69,14 @@ async function initDb(db) {
       })
     )
     .then(docDataList =>
-      docDataList.map(item => createDocumentFromTemplate(item.userId, item.index))
+      docDataList.map(item =>
+        createDocumentFromTemplate(item.userId, item.index)
+      )
     )
-    .then(docObjectList => createItemsInDatabase(Document, docObjectList))
-    .then(docPromiseList => Promise.all(docPromiseList))
-    .then(docIdList => Object.assign(result, {docIdList}));
-  console.log(result);
+    .then(docObjectList => Document.create(docObjectList))
+    .then(created => created.map(document => document._id))
+    .catch(err => null);
+  return result;
 }
 
 module.exports = initDb;
