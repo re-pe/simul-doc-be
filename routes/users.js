@@ -8,6 +8,9 @@ const {
 } = require("./validators/validators");
 const validator = require("express-joi-validator");
 
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+
 /* GET users listing. */
 router.get("/", function(req, res, next) {
   User.find({})
@@ -15,15 +18,13 @@ router.get("/", function(req, res, next) {
       res.send(records);
     })
     .catch(next);
-  //return res.sendFile(path.join(__dirname + '/templateLogReg/index.html'));
 });
 
+
 router.post("/", validator(UserBodySchema), (req, res, next) => {
-  console.log(JSON.stringify(req.body));
   User.create(req.body)
     .then(added => {
-      res.send({ message: "User sucesfully created!" });
-      //res.redirect("/login");
+      res.send(added);
     })
     .catch(next);
 });
@@ -45,6 +46,9 @@ router.delete("/:usrId", (req, res, next) => {
 });
 
 router.put("/:usrId", validator(UserBodySchema), (req, res, next) => {
+  if (req.body.password) {
+    req.body.password = bcrypt.hashSync(req.body.password, saltRounds)
+  };
   User.findByIdAndUpdate(req.params.usrId, req.body, { new: true })
     .then(updated => {
       res.send(updated);

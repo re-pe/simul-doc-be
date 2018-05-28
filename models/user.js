@@ -56,12 +56,20 @@ UserSchema.static("authenticate", function(username, password, callback) {
 
 UserSchema.pre("save", function(next) {
   const user = this;
-  bcrypt.hash(user.password, saltRounds, function(err, hash) {
+  user.password = bcrypt.hashSync(user.password, saltRounds);
+  next();
+});
+
+UserSchema.pre("update", function(next) {
+  const query = this;
+
+  let password = this._update.password;
+  bcrypt.hash(password, saltRounds, function(err, hash) {
     // Store hash in your password DB.
     if (err) {
       return next(err);
     }
-    user.password = hash;
+    query.update({}, { $set: { password: hash } });
     next();
   });
 });
