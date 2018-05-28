@@ -2,3 +2,5 @@ node_modules/
 !_frontend/
 package-lock.json
 .idea/
+.vscode/
+.project/

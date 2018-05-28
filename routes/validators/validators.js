@@ -21,13 +21,23 @@ const UserValidator = Joi.object({
     lastName: NonEmptyString,
     email: EmailString,
     password: PasswordString
-})
+});
 
 const UserBodySchema = {
     body: UserValidator
 };
 
+const UserLoginValidator = Joi.object({
+    email: EmailString,
+    password: PasswordString
+});
+
+const UserBodyLoginSchema = {
+    body: UserLoginValidator
+};
+
 module.exports = {
     UserBodySchema,
+    UserBodyLoginSchema,
     DocumentBodySchema
 }
