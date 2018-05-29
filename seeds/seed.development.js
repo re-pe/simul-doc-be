@@ -7,7 +7,7 @@ const NUMBER_OF_DOCUMENTS_TO_CREATE = 20;
 /**
  * Creates user data object from template literal
  *
- * @param {number} index
+ * @param {Number} index
  * @return {Object} Object with data to create item
  * in database users collection
  */
@@ -22,8 +22,8 @@ const createUserFromTemplate = index =>
 /**
  * Creates user data object from template litteral
  *
- * @param {_id} userId
- * @param {number} index
+ * @param {String} userId
+ * @param {Number} index
  * @return {Object} Object with data to create item
  * in database documents collection
  */
@@ -38,7 +38,7 @@ const createDocumentFromTemplate = (userId, index) =>
 /**
  * Creates initials item set in the database
  *
- * @param {mongoose.connection} db
+ * @param {Mongoose.Connection} db
  * @return {Object} Object with ids of items
  * users and documents collections in the database
  */
@@ -52,8 +52,8 @@ async function initDb(db) {
     .then(userDataList =>
       userDataList.map(item => createUserFromTemplate(item.index)))
     .then(userObjectList => User.create(userObjectList))
-    .then(created => created.map(user => user._id))
-    .catch(() => null);
+    .then(created => created.map(user => user.id))
+    .catch(err => err);
 
   result.documentIdList = await Promise.resolve(result.userIdList)
     .then(userIdList =>
@@ -65,8 +65,8 @@ async function initDb(db) {
       docDataList.map(item =>
         createDocumentFromTemplate(item.userId, item.index)))
     .then(docObjectList => Document.create(docObjectList))
-    .then(created => created.map(document => document._id))
-    .catch(() => null);
+    .then(created => created.map(document => document.id))
+    .catch(err => err);
   return result;
 }
 
