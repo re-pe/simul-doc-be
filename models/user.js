@@ -1,77 +1,75 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose');
 
-const bcrypt = require("bcrypt");
+const { Schema } = mongoose;
+
+const bcrypt = require('bcrypt');
+
 const saltRounds = 10;
 
 const UserSchema = new Schema(
   {
     firstName: {
       type: String,
-      required: true
+      required: true,
     },
     lastName: {
       type: String,
-      required: true
+      required: true,
     },
     email: {
       type: String,
-      required: true
+      required: true,
     },
     password: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
-UserSchema.static("authenticate", function(username, password, callback) {
-  return this.findOne({
-    email: username
-  }).then(function(user) {
-    if (!user) {
-      return callback(
-        { message: "Password or username didn't match.", status: 401 },
-        null
-      );
-    }
-    bcrypt.compare(password, user.password, function(err, result) {
-      if (result === true) {
-        return callback(null, user);
-      } else {
-        return callback(
-          {
-            message: "Password or username didn't match.",
-            status: 401
-          },
-          null
-        );
-      }
-    });
-  });
-});
+UserSchema.static('authenticate', (username, password, callback) => this.findOne({
+  email: username,
+}).then((user) => {
+  if (!user) {
+    return callback(
+      { message: "Password or username didn't match.", status: 401 },
+      null,
+    );
+  }
+  const result = bcrypt.compareSync(password, user.password);
+  if (result === true) {
+    return callback(null, user);
+  }
+  return callback(
+    {
+      message: "Password or username didn't match.",
+      status: 401,
+    },
+    null,
+  );
+}));
 
-UserSchema.pre("save", function(next) {
+UserSchema.pre('save', (next) => {
   const user = this;
   user.password = bcrypt.hashSync(user.password, saltRounds);
   next();
 });
 
-UserSchema.pre("update", function(next) {
+UserSchema.pre('update', (next) => {
   const query = this;
 
-  let password = this._update.password;
-  bcrypt.hash(password, saltRounds, function(err, hash) {
+  const { password } = this._update;
+  bcrypt.hash(password, saltRounds, (err, hash) => {
     // Store hash in your password DB.
     if (err) {
       return next(err);
     }
     query.update({}, { $set: { password: hash } });
-    next();
+    return next();
   });
 });
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model('User', UserSchema);
