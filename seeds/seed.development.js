@@ -56,8 +56,8 @@ async function initDb(db) {
       userDataList.map(item => createUserFromTemplate(item.index))
     )
     .then(userObjectList => User.create(userObjectList))
-    .then(created => created.map(user => user._id))
-    .catch(err => null);
+    .then(created => created.map(user => user.id))
+    .catch(err => err);
 
   result["documentIdList"] = await Promise.resolve(result["userIdList"])
     .then(userIdList =>
@@ -74,7 +74,7 @@ async function initDb(db) {
       )
     )
     .then(docObjectList => Document.create(docObjectList))
-    .then(created => created.map(document => document._id))
+    .then(created => created.map(document => document.id))
     .catch(err => null);
   return result;
 }
