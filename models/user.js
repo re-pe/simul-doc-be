@@ -19,6 +19,7 @@ const UserSchema = new Schema(
     email: {
       type: String,
       required: true,
+      unique: true
     },
     password: {
       type: String,
@@ -65,7 +66,7 @@ UserSchema.pre('update', (next) => {
   bcrypt.hash(password, saltRounds, (err, hash) => {
     // Store hash in your password DB.
     if (err) {
-      return next(err);
+      return next(err)
     }
     query.update({}, { $set: { password: hash } });
     return next();

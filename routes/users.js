@@ -1,5 +1,6 @@
 const app = require('express');
 
+const _ = require('lodash')
 const router = app.Router();
 const User = require('../models/user');
 const {
@@ -11,7 +12,6 @@ const bcrypt = require('bcrypt');
 
 const saltRounds = 10;
 
-/* GET users listing. */
 router.get('/', (req, res, next) => {
   User.find({})
     .then((records) => {
@@ -20,30 +20,30 @@ router.get('/', (req, res, next) => {
     .catch(next);
 });
 
-
 router.post('/', validator(UserBodySchema), (req, res, next) => {
   User.create(req.body)
     .then((added) => {
-      res.send(added);
+      let body = _.pick(added, ['_id', 'firstName', 'lastName', 'email'])
+      res.send(body)
     })
-    .catch(next);
-});
+    .catch(next)
+})
 
 router.get('/:usrId', (req, res, next) => {
   User.findById(req.params.usrId)
     .then((record) => {
       res.send(record);
     })
-    .catch(next);
-});
+    .catch(next)
+})
 
 router.delete('/:usrId', (req, res, next) => {
   User.findByIdAndRemove(req.params.usrId)
     .then(() => {
       res.sendStatus(204);
     })
-    .catch(next);
-});
+    .catch(next)
+})
 
 router.put('/:usrId', validator(UserBodySchema), (req, res, next) => {
   if (req.body.password) {
@@ -53,7 +53,7 @@ router.put('/:usrId', validator(UserBodySchema), (req, res, next) => {
     .then((updated) => {
       res.send(updated);
     })
-    .catch(next);
-});
+    .catch(next)
+})
 
-module.exports = router;
+module.exports = router
