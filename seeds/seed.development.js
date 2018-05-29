@@ -1,5 +1,5 @@
-const User = require("../models/user");
-const Document = require("../models/document");
+const User = require('../models/user');
+const Document = require('../models/document');
 
 const NUMBER_OF_USERS_TO_CREATE = 5;
 const NUMBER_OF_DOCUMENTS_TO_CREATE = 20;
@@ -43,39 +43,30 @@ const createDocumentFromTemplate = (userId, index) =>
  * users and documents collections in the database
  */
 async function initDb(db) {
-  let result = {};
-  result["userIdList"] = await Promise.resolve(db.dropDatabase())
+  const result = {};
+  result.userIdList = await Promise.resolve(db.dropDatabase())
     .then(() =>
-      new Array(NUMBER_OF_USERS_TO_CREATE).fill(null).map((_, index) => {
-        return {
-          index
-        };
-      })
-    )
+      new Array(NUMBER_OF_USERS_TO_CREATE).fill(null).map((_, index) => ({
+        index,
+      })))
     .then(userDataList =>
-      userDataList.map(item => createUserFromTemplate(item.index))
-    )
+      userDataList.map(item => createUserFromTemplate(item.index)))
     .then(userObjectList => User.create(userObjectList))
     .then(created => created.map(user => user._id))
-    .catch(err => null);
+    .catch(() => null);
 
-  result["documentIdList"] = await Promise.resolve(result["userIdList"])
+  result.documentIdList = await Promise.resolve(result.userIdList)
     .then(userIdList =>
-      new Array(NUMBER_OF_DOCUMENTS_TO_CREATE).fill(null).map((_, index) => {
-        return {
-          index,
-          userId: userIdList[index % NUMBER_OF_USERS_TO_CREATE]
-        };
-      })
-    )
+      new Array(NUMBER_OF_DOCUMENTS_TO_CREATE).fill(null).map((_, index) => ({
+        index,
+        userId: userIdList[index % NUMBER_OF_USERS_TO_CREATE],
+      })))
     .then(docDataList =>
       docDataList.map(item =>
-        createDocumentFromTemplate(item.userId, item.index)
-      )
-    )
+        createDocumentFromTemplate(item.userId, item.index)))
     .then(docObjectList => Document.create(docObjectList))
     .then(created => created.map(document => document._id))
-    .catch(err => null);
+    .catch(() => null);
   return result;
 }
 

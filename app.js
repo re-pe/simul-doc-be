@@ -18,7 +18,7 @@ const mongoose = require('mongoose');
 const mongoDB = 'mongoDb://localhost/simul-doc';
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
-// const db = mongoose.connection;
+const db = mongoose.connection;
 // db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 // const store = new MongoDBStore({
 //   uri: "mongodb://localhost/session_test",
@@ -77,6 +77,8 @@ app.use((err, req, res) => {
   res.send(err);
 });
 
-// require('./seeds/seed.development.js').initDb(db).then();
+const initDb = require('./seeds/seed.development.js');
+
+initDb(db).then();
 
 module.exports = app;
