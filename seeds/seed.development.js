@@ -75,5 +75,13 @@ async function initDb(db) {
   return result;
 }
 
-initDb(mongoose.connection); // .then(result => console.log(result));
-
+initDb(mongoose.connection).then((result) => {
+  if (result.userIdList.length &&
+    result.userIdList.length === NUMBER_OF_USERS_TO_CREATE &&
+    result.documentIdList.length &&
+    result.documentIdList.length === NUMBER_OF_DOCUMENTS_TO_CREATE) {
+    console.log('Success! Database have been initialized!\n');
+  } else {
+    console.log('Error! Database have not been initialized!\n');
+  }
+});
