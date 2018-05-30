@@ -11,14 +11,12 @@ const documentsRouter = require('./routes/documents');
 const userProfile = require('./routes/profile');
 const userLogin = require('./routes/login');
 const userLogout = require('./routes/logout');
-
-// Set up mongoose connection
 const mongoose = require('mongoose');
 
 const mongoDB = 'mongoDb://localhost/simul-doc';
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
-const db = mongoose.connection;
+// const db = mongoose.connection;
 // db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 // const store = new MongoDBStore({
 //   uri: "mongodb://localhost/session_test",
@@ -76,9 +74,5 @@ app.use((err, req, res) => {
   res.status(err.status || 500);
   res.send(err);
 });
-
-const initDb = require('./seeds/seed.development.js');
-
-initDb(db);
 
 module.exports = app;
