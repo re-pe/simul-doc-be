@@ -8,7 +8,7 @@ const validator = require('express-joi-validator');
 router.post('/', validator(UserBodyLoginSchema), (req, res, next) => {
   User.authenticate(req.body.email, req.body.password, (user) => {
     if (!user) {
-      const err = { message: 'Wrong email or password.'};
+      const err = { message: 'Wrong email or password.' };
       err.status = 401;
       return res.status(401).send(err);
     }
