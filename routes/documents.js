@@ -9,8 +9,8 @@ router.get('/', (req, res, next) => {
   Document.find({})
     .populate('owner')
     .populate('authors')
-    .then((found) => {
-      res.send(found);
+    .then((document) => {
+      res.send(document);
     })
     .catch(next);
 });
@@ -19,16 +19,16 @@ router.get('/:docId', (req, res, next) => {
   Document.findById(req.params.docId)
     .populate('owner')
     .populate('authors')
-    .then((record) => {
-      res.send(record);
+    .then((document) => {
+      res.send(document);
     })
     .catch(next);
 });
 
 router.post('/', validator(DocumentBodySchema), (req, res, next) => {
   Document.create(req.body)
-    .then((added) => {
-      res.send(added);
+    .then((document) => {
+      res.send(document);
     })
     .catch(next);
 });
@@ -43,8 +43,8 @@ router.delete('/:docId', (req, res, next) => {
 
 router.put('/:docId', validator(DocumentBodySchema), (req, res, next) => {
   Document.findByIdAndUpdate(req.params.docId, req.body, { new: true })
-    .then((updated) => {
-      res.send(updated);
+    .then((document) => {
+      res.send(document);
     })
     .catch(next);
 });
