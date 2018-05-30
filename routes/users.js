@@ -1,6 +1,7 @@
 const app = require('express');
 
-const _ = require('lodash')
+const _ = require('lodash');
+
 const router = app.Router();
 const User = require('../models/user');
 const {
@@ -14,46 +15,46 @@ const saltRounds = 10;
 
 router.get('/', (req, res, next) => {
   User.find({})
-    .then((records) => {
-      res.send(records);
+    .then((users) => {
+      res.send(users);
     })
     .catch(next);
 });
 
 router.post('/', validator(UserBodySchema), (req, res, next) => {
   User.create(req.body)
-    .then((added) => {
-      let body = _.pick(added, ['_id', 'firstName', 'lastName', 'email'])
-      res.send(body)
+    .then((user) => {
+      const body = _.pick(user, ['_id', 'firstName', 'lastName', 'email']);
+      res.send(body);
     })
-    .catch(next)
-})
+    .catch(next);
+});
 
 router.get('/:usrId', (req, res, next) => {
   User.findById(req.params.usrId)
-    .then((record) => {
-      res.send(record);
+    .then((user) => {
+      res.send(user);
     })
-    .catch(next)
-})
+    .catch(next);
+});
 
 router.delete('/:usrId', (req, res, next) => {
   User.findByIdAndRemove(req.params.usrId)
     .then(() => {
       res.sendStatus(204);
     })
-    .catch(next)
-})
+    .catch(next);
+});
 
 router.put('/:usrId', validator(UserBodySchema), (req, res, next) => {
   if (req.body.password) {
     req.body.password = bcrypt.hashSync(req.body.password, saltRounds);
   }
   User.findByIdAndUpdate(req.params.usrId, req.body, { new: true })
-    .then((updated) => {
-      res.send(updated);
+    .then((user) => {
+      res.send(user);
     })
-    .catch(next)
-})
+    .catch(next);
+});
 
-module.exports = router
+module.exports = router;
