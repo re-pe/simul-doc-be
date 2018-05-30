@@ -1,21 +1,23 @@
-const Joi = require("joi");
-const app = require("express");
-const router = app.Router();
-const User = require("../models/user");
+const app = require('express');
 
-router.get("/", function(req, res, next) {
-  const ObjectId = require("mongoose").Types.ObjectId;
-  User.findById(ObjectId(req.signedCookies["simul-doc"]))
-    .then(user => {
+const router = app.Router();
+const User = require('../models/user');
+
+router.get('/', (req, res, next) => {
+  /* eslint-disable global-require */
+  const { ObjectId } = require('mongoose').Types;
+  /* eslint-enable global-require */
+  User.findById(ObjectId(req.signedCookies['simul-doc']))
+    .then((user) => {
       if (user === null) {
-        const err = new Error("Not authorized! Go back!");
+        const err = new Error('Not authorized! Go back!');
         err.status = 400;
         next(err);
       } else {
         res.send({
           firstName: user.firstName,
           lastName: user.lastName,
-          email: user.email
+          email: user.email,
         });
       }
     })

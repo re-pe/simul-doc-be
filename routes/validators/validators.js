@@ -6,38 +6,38 @@ const EmailString = Joi.string().email();
 const PasswordString = Joi.string().regex(/[0-9a-z]{6,12}/i);
 
 const DocumentValidator = Joi.object({
-    owner: ObjectIdValidator,
-    authors: Joi.array().items(ObjectIdValidator),
-    title: Joi.string(),
-    content: Joi.string()
+  owner: ObjectIdValidator,
+  authors: Joi.array().items(ObjectIdValidator),
+  title: Joi.string(),
+  content: Joi.string(),
 });
 
 const DocumentBodySchema = {
-    body: DocumentValidator
+  body: DocumentValidator,
 };
 
 const UserValidator = Joi.object({
-    firstName: NonEmptyString,
-    lastName: NonEmptyString,
-    email: EmailString,
-    password: PasswordString
+  firstName: NonEmptyString,
+  lastName: NonEmptyString,
+  email: EmailString,
+  password: PasswordString,
 });
 
 const UserBodySchema = {
-    body: UserValidator
+  body: UserValidator,
 };
 
 const UserLoginValidator = Joi.object({
-    email: EmailString,
-    password: PasswordString
+  email: EmailString,
+  password: PasswordString,
 });
 
 const UserBodyLoginSchema = {
-    body: UserLoginValidator
+  body: UserLoginValidator,
 };
 
 module.exports = {
-    UserBodySchema,
-    UserBodyLoginSchema,
-    DocumentBodySchema
-}
+  UserBodySchema,
+  UserBodyLoginSchema,
+  DocumentBodySchema,
+};
