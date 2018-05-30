@@ -35,20 +35,10 @@ UserSchema.static('authenticate', function authenticate(username, password, call
   return this.findOne({
     email: username,
   }).then((user) => {
-    bcrypt.compare(password, user.password).then(result =>
-      (result ?
-        callback(null, user) :
-        callback(
-          {
-            message: "Password or username didn't match.",
-            status: 401,
-          },
-          null,
-        )));
-  }).catch(() => callback(
-    { message: "Password or username didn't match.", status: 401 },
-    null,
-  ));
+    bcrypt.compare(password, user.password)
+      .then(result => callback(result ? user : null))
+      .catch(() => callback(null));
+  }).catch(() => callback(null));
 });
 
 UserSchema.pre('save', function save(next) {
