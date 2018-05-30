@@ -35,18 +35,16 @@ UserSchema.static('authenticate', function authenticate(username, password, call
   return this.findOne({
     email: username,
   }).then((user) => {
-    bcrypt.compare(password, user.password, (err, result) => {
-      if (result === true) {
-        return callback(null, user);
-      }
-      return callback(
-        {
-          message: "Password or username didn't match.",
-          status: 401,
-        },
-        null,
-      );
-    });
+    bcrypt.compare(password, user.password).then(result =>
+      (result ?
+        callback(null, user) :
+        callback(
+          {
+            message: "Password or username didn't match.",
+            status: 401,
+          },
+          null,
+        )));
   }).catch(() => callback(
     { message: "Password or username didn't match.", status: 401 },
     null,
@@ -55,13 +53,10 @@ UserSchema.static('authenticate', function authenticate(username, password, call
 
 UserSchema.pre('save', function save(next) {
   const user = this;
-  bcrypt.hash(user.password, saltRounds, (err, hash) => {
-    if (err) {
-      return next(err);
-    }
+  bcrypt.hash(user.password, saltRounds).then((hash) => {
     user.password = hash;
     return next();
-  });
+  }).catch(err => next(err));
 });
 
 module.exports = mongoose.model('User', UserSchema);
