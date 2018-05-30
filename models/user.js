@@ -46,7 +46,7 @@ UserSchema.pre('save', function save(next) {
   bcrypt.hash(user.password, saltRounds).then((hash) => {
     user.password = hash;
     return next();
-  }).catch(err => next(err));
+  }).catch(next);
 });
 
 module.exports = mongoose.model('User', UserSchema);
