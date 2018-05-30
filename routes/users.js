@@ -1,17 +1,13 @@
 const app = require('express');
-
 const _ = require('lodash');
+const User = require('../models/user');
+const { UserBodySchema } = require('./validators/validators');
+const validator = require('express-joi-validator');
+// const bcrypt = require('bcrypt');
 
 const router = app.Router();
-const User = require('../models/user');
-const {
-  UserBodySchema,
-} = require('./validators/validators');
-const validator = require('express-joi-validator');
 
-const bcrypt = require('bcrypt');
-
-const saltRounds = 10;
+// const SALT_ROUNDS = 10;
 
 router.get('/', (req, res, next) => {
   User.find({})
@@ -47,10 +43,7 @@ router.delete('/:usrId', (req, res, next) => {
 });
 
 router.put('/:usrId', validator(UserBodySchema), (req, res, next) => {
-  if (req.body.password) {
-    req.body.password = bcrypt.hashSync(req.body.password, saltRounds);
-  }
-  User.findByIdAndUpdate(req.params.usrId, req.body, { new: true })
+  User.findOneAndUpdate({ _id: req.params.usrId }, req.body, { new: true })
     .then((user) => {
       res.send(user);
     })
