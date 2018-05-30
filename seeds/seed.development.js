@@ -1,5 +1,10 @@
 const User = require('../models/user');
 const Document = require('../models/document');
+const mongoose = require('mongoose');
+
+const mongoDB = 'mongoDb://localhost/simul-doc';
+mongoose.connect(mongoDB);
+mongoose.Promise = global.Promise;
 
 const NUMBER_OF_USERS_TO_CREATE = 5;
 const NUMBER_OF_DOCUMENTS_TO_CREATE = 20;
@@ -38,7 +43,6 @@ const createDocumentFromTemplate = (userId, index) =>
 /**
  * Creates initials item set in the database
  *
- * @param {Mongoose.Connection} db
  * @return {Object} Object with ids of items
  * users and documents collections in the database
  */
@@ -67,7 +71,9 @@ async function initDb(db) {
     .then(docObjectList => Document.create(docObjectList))
     .then(created => created.map(document => document.id))
     .catch(err => err);
+  db.close();
   return result;
 }
 
-module.exports = initDb;
+initDb(mongoose.connection); // .then(result => console.log(result));
+
