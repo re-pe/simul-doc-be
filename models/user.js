@@ -31,14 +31,14 @@ const UserSchema = new Schema(
   },
 );
 
-UserSchema.static('authenticate', function (username, password, callback) {
+UserSchema.static('authenticate', function authenticate(username, password, callback) {
   return this.findOne({
     email: username,
   }).then((user) => {
     bcrypt.compare(password, user.password, (err, result) => {
       if (result === true) {
         return callback(null, user);
-      } 
+      }
       return callback(
         {
           message: "Password or username didn't match.",
@@ -53,14 +53,14 @@ UserSchema.static('authenticate', function (username, password, callback) {
   ));
 });
 
-UserSchema.pre('save', function (next) {
+UserSchema.pre('save', function save(next) {
   const user = this;
   bcrypt.hash(user.password, saltRounds, (err, hash) => {
     if (err) {
       return next(err);
     }
     user.password = hash;
-    next();
+    return next();
   });
 });
 
