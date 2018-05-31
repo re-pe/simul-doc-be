@@ -61,16 +61,14 @@ async function initDb(db) {
 
   result.documentIdList = await Promise.resolve(result.userIdList)
     .then(userIdList =>
-      new Array(NUMBER_OF_DOCUMENTS_TO_CREATE).fill(null).map((_, index) => {
-        return {
-          index,
-          userId1: userIdList[index % NUMBER_OF_USERS_TO_CREATE],
-          userId2: userIdList[
-            (index < 1 ? NUMBER_OF_USERS_TO_CREATE - 1 : index - 1) %
-            NUMBER_OF_USERS_TO_CREATE
-          ],
-        };
-      }))
+      new Array(NUMBER_OF_DOCUMENTS_TO_CREATE).fill(null).map((_, index) => ({
+        index,
+        userId1: userIdList[index % NUMBER_OF_USERS_TO_CREATE],
+        userId2: userIdList[
+          (index < 1 ? NUMBER_OF_USERS_TO_CREATE - 1 : index - 1) %
+          NUMBER_OF_USERS_TO_CREATE
+        ],
+      })))
     .then(docDataList =>
       docDataList.map(item =>
         createDocumentFromTemplate(item.userId1, item.userId2, item.index)))
