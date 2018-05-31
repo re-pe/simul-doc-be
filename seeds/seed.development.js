@@ -87,7 +87,6 @@ initDb(mongoose.connection).then((result) => {
     result.documentIdList.length &&
     result.documentIdList.length === NUMBER_OF_DOCUMENTS_TO_CREATE) {
     console.log('Success! Database have been initialized!\n');
-    console.log(result);
   } else {
     console.log('Error! Database have not been initialized!\n');
   }
