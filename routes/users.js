@@ -43,7 +43,7 @@ router.delete('/:usrId', (req, res, next) => {
 });
 
 router.put('/:usrId', validator(UserBodySchema), (req, res, next) => {
-  if (req.session.userId !== req.params.usrId) {
+  if (req.signedCookies['simul-doc'] !== req.params.usrId) {
     return next();
   }
   return User.findOneAndUpdate({ _id: req.params.usrId }, req.body, { new: true })

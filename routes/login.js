@@ -12,9 +12,10 @@ router.post('/', validator(UserBodyLoginSchema), (req, res, next) => {
       err.status = 401;
       return res.status(401).send(err);
     }
-    req.session.userId = user._id;
-    res.cookie('simul-doc', user._id, { signed: true, httpOnly: true });
+    req.session.userId = user.id;
+    res.cookie('simul-doc', user.id, { signed: true, httpOnly: true });
     return res.send({
+      id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
