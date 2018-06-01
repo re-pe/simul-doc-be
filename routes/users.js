@@ -1,5 +1,4 @@
 const app = require('express');
-const _ = require('lodash');
 const User = require('../models/user');
 const { UserBodySchema } = require('./validators/validators');
 const validator = require('express-joi-validator');
@@ -11,26 +10,19 @@ const router = app.Router();
 
 router.get('/', (req, res, next) => {
   User.find({})
-    .then((users) => {
-      res.send(users);
-    })
-    .catch(next);
-});
-
-router.post('/', validator(UserBodySchema), (req, res, next) => {
-  User.create(req.body)
-    .then((user) => {
-      const body = _.pick(user, ['_id', 'firstName', 'lastName', 'email']);
-      res.send(body);
-    })
+    .then(users => res.send(users))
     .catch(next);
 });
 
 router.get('/:usrId', (req, res, next) => {
   User.findById(req.params.usrId)
-    .then((user) => {
-      res.send(user);
-    })
+    .then(user => res.send(user))
+    .catch(next);
+});
+
+router.post('/', validator(UserBodySchema), (req, res, next) => {
+  User.create(req.body)
+    .then(user => res.send(user))
     .catch(next);
 });
 

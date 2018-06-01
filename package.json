@@ -20,7 +20,6 @@
     "express-session": "^1.15.6",
     "http-errors": "~1.6.2",
     "joi": "^13.3.0",
-    "lodash": "^4.17.10",
     "mongoose": "^5.0.18",
     "morgan": "~1.9.0",
     "pug": "2.0.0-beta11"

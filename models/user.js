@@ -21,13 +21,16 @@ const UserSchema = new Schema({
     type: String,
     required: true,
     unique: true,
+    select: false,
   },
   password: {
     type: String,
     required: true,
+    select: false,
   },
 }, {
   timestamps: true,
+  select: false,
 });
 
 UserSchema.static('authenticate', function authenticate(username, password, callback) {
