@@ -30,7 +30,6 @@ const UserSchema = new Schema({
   },
 }, {
   timestamps: true,
-  select: false,
 });
 
 UserSchema.static('authenticate', function authenticate(username, password, callback) {
