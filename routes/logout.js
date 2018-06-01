@@ -1,17 +1,14 @@
-const app = require("express");
+const app = require('express');
+
 const router = app.Router();
 
-// GET /logout
-router.get("/logout", function(req, res, next) {
+router.get('/logout', (req, res, next) => {
   if (req.session) {
-    // delete session object
-    req.session.destroy(function(err) {
+    req.session.destroy((err) => {
       if (err) {
         return next(err);
-      } else {
-        res.send({ message: "Logout was successful" });
-        //return re0s.redirect("/");
       }
+      return res.send({ message: 'Logout was successful' });
     });
   }
 });

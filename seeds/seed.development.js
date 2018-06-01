@@ -1,5 +1,10 @@
-const User = require("../models/user");
-const Document = require("../models/document");
+const User = require('../models/user');
+const Document = require('../models/document');
+const mongoose = require('mongoose');
+
+const mongoDB = 'mongoDb://localhost/simul-doc';
+mongoose.connect(mongoDB);
+mongoose.Promise = global.Promise;
 
 const NUMBER_OF_USERS_TO_CREATE = 5;
 const NUMBER_OF_DOCUMENTS_TO_CREATE = 20;
@@ -7,7 +12,7 @@ const NUMBER_OF_DOCUMENTS_TO_CREATE = 20;
 /**
  * Creates user data object from template literal
  *
- * @param {number} index
+ * @param {Number} index
  * @return {Object} Object with data to create item
  * in database users collection
  */
@@ -22,15 +27,15 @@ const createUserFromTemplate = index =>
 /**
  * Creates user data object from template litteral
  *
- * @param {_id} userId
- * @param {number} index
+ * @param {String} userId
+ * @param {Number} index
  * @return {Object} Object with data to create item
  * in database documents collection
  */
-const createDocumentFromTemplate = (userId, index) =>
+const createDocumentFromTemplate = (index, userId1, userId2) =>
   JSON.parse(`{
-  "owner": "${userId}",
-  "authors": ["${userId}"],
+  "owner": "${userId1}",
+  "authors": ["${userId1}", "${userId2}"],
   "title": "title${index}",
   "content": "content ${index}"
 }`);
@@ -38,45 +43,49 @@ const createDocumentFromTemplate = (userId, index) =>
 /**
  * Creates initials item set in the database
  *
- * @param {mongoose.connection} db
  * @return {Object} Object with ids of items
  * users and documents collections in the database
  */
 async function initDb(db) {
-  let result = {};
-  result["userIdList"] = await Promise.resolve(db.dropDatabase())
+  const result = {};
+  result.userIdList = await Promise.resolve(db.dropDatabase())
     .then(() =>
-      new Array(NUMBER_OF_USERS_TO_CREATE).fill(null).map((_, index) => {
-        return {
-          index
-        };
-      })
-    )
+      new Array(NUMBER_OF_USERS_TO_CREATE).fill(null).map((_, index) => ({
+        index,
+      })))
     .then(userDataList =>
-      userDataList.map(item => createUserFromTemplate(item.index))
-    )
+      userDataList.map(item => createUserFromTemplate(item.index)))
     .then(userObjectList => User.create(userObjectList))
     .then(created => created.map(user => user.id))
     .catch(err => err);
 
-  result["documentIdList"] = await Promise.resolve(result["userIdList"])
+  result.documentIdList = await Promise.resolve(result.userIdList)
     .then(userIdList =>
-      new Array(NUMBER_OF_DOCUMENTS_TO_CREATE).fill(null).map((_, index) => {
-        return {
-          index,
-          userId: userIdList[index % NUMBER_OF_USERS_TO_CREATE]
-        };
-      })
-    )
+      new Array(NUMBER_OF_DOCUMENTS_TO_CREATE).fill(null).map((_, index) => ([
+        index,
+        userIdList[index % NUMBER_OF_USERS_TO_CREATE],
+        userIdList[
+          (index < 1 ? NUMBER_OF_USERS_TO_CREATE - 1 : index - 1) %
+          NUMBER_OF_USERS_TO_CREATE
+        ],
+      ])))
     .then(docDataList =>
       docDataList.map(item =>
-        createDocumentFromTemplate(item.userId, item.index)
-      )
-    )
+        createDocumentFromTemplate(...item)))
     .then(docObjectList => Document.create(docObjectList))
     .then(created => created.map(document => document.id))
-    .catch(err => null);
+    .catch(err => err);
+  db.close();
   return result;
 }
 
-module.exports = initDb;
+initDb(mongoose.connection).then((result) => {
+  if (result.userIdList.length &&
+    result.userIdList.length === NUMBER_OF_USERS_TO_CREATE &&
+    result.documentIdList.length &&
+    result.documentIdList.length === NUMBER_OF_DOCUMENTS_TO_CREATE) {
+    console.log('Success! Database have been initialized!\n');
+  } else {
+    console.log('Error! Database have not been initialized!\n');
+  }
+});

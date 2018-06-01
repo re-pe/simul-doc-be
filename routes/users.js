@@ -1,53 +1,46 @@
-const Joi = require("joi");
-const app = require("express");
+const app = require('express');
+const User = require('../models/user');
+const { UserBodySchema } = require('./validators/validators');
+const validator = require('express-joi-validator');
+// const bcrypt = require('bcrypt');
+
 const router = app.Router();
-const User = require("../models/user");
-const {
-  UserBodySchema,
-  UserBodyLoginSchema
-} = require("./validators/validators");
-const validator = require("express-joi-validator");
 
-/* GET users listing. */
-router.get("/", function(req, res, next) {
+// patikrinti, kas gražinama
+
+router.get('/', (req, res, next) => {
   User.find({})
-    .then(records => {
-      res.send(records);
-    })
-    .catch(next);
-  //return res.sendFile(path.join(__dirname + '/templateLogReg/index.html'));
-});
-
-router.post("/", validator(UserBodySchema), (req, res, next) => {
-  console.log(JSON.stringify(req.body));
-  User.create(req.body)
-    .then(added => {
-      res.send({ message: "User sucesfully created!" });
-      //res.redirect("/login");
-    })
+    .then(users => res.send(users))
     .catch(next);
 });
 
-router.get("/:usrId", (req, res, next) => {
+router.get('/:usrId', (req, res, next) => {
   User.findById(req.params.usrId)
-    .then(record => {
-      res.send(record);
-    })
+    .then(user => res.send(user))
     .catch(next);
 });
 
-router.delete("/:usrId", (req, res, next) => {
+router.post('/', validator(UserBodySchema), (req, res, next) => {
+  User.create(req.body)
+    .then(user => res.send(user))
+    .catch(next);
+});
+
+router.delete('/:usrId', (req, res, next) => {
   User.findByIdAndRemove(req.params.usrId)
-    .then(deleted => {
+    .then(() => {
       res.sendStatus(204);
     })
     .catch(next);
 });
 
-router.put("/:usrId", validator(UserBodySchema), (req, res, next) => {
-  User.findByIdAndUpdate(req.params.usrId, req.body, { new: true })
-    .then(updated => {
-      res.send(updated);
+router.put('/:usrId', validator(UserBodySchema), (req, res, next) => {
+  if (req.signedCookies['simul-doc'] !== req.params.usrId) {
+    return next();
+  }
+  return User.findOneAndUpdate({ _id: req.params.usrId }, req.body, { new: true })
+    .then((user) => {
+      res.send(user);
     })
     .catch(next);
 });
