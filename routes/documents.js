@@ -7,8 +7,8 @@ const validator = require('express-joi-validator');
 
 router.get('/', (req, res, next) => {
   Document.find({})
-    .populate('owner')
-    .populate('authors')
+    .populate('owner', '_id firstName lastName')
+    .populate('authors', '_id firstName lastName')
     .then((document) => {
       res.send(document);
     })
@@ -17,8 +17,8 @@ router.get('/', (req, res, next) => {
 
 router.get('/:docId', (req, res, next) => {
   Document.findById(req.params.docId)
-    .populate('owner')
-    .populate('authors')
+    .populate('owner', '_id firstName lastName')
+    .populate('authors', '_id firstName lastName')
     .then((document) => {
       res.send(document);
     })
