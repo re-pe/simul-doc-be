@@ -7,7 +7,7 @@ const validator = require('express-joi-validator');
 
 const router = app.Router();
 
-// const SALT_ROUNDS = 10;
+// patikrinti, kas gražinama
 
 router.get('/', (req, res, next) => {
   User.find({})
