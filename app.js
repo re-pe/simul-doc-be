@@ -16,28 +16,12 @@ const mongoose = require('mongoose');
 const mongoDB = 'mongoDb://localhost/simul-doc';
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
-// const db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-// const store = new MongoDBStore({
-//   uri: "mongodb://localhost/session_test",
-//   databaseName: "session_test",
-//   collection: "mySessions"
-// });
-
-// Catch errors
-// store.on("error", function(error) {
-//   assert.ifError(error);
-//   assert.ok(false);
-// });
-
 const app = express();
 
-// tutorial
 app.use(session({
   secret: 'vowel either object copper',
   signed: true,
   cookie: { secure: true },
-  //    store: store,
   resave: false,
   saveUninitialized: true,
 }));
@@ -47,10 +31,6 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser('secret'));
-
-// tutorial
-// serve static files from template
-// app.use(express.static(__dirname + '/templateLogReg'));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
