@@ -32,7 +32,7 @@ const createUserFromTemplate = index =>
  * @return {Object} Object with data to create item
  * in database documents collection
  */
-const createDocumentFromTemplate = (userId1, userId2, index) =>
+const createDocumentFromTemplate = (index, userId1, userId2) =>
   JSON.parse(`{
   "owner": "${userId1}",
   "authors": ["${userId1}", "${userId2}"],
@@ -61,17 +61,17 @@ async function initDb(db) {
 
   result.documentIdList = await Promise.resolve(result.userIdList)
     .then(userIdList =>
-      new Array(NUMBER_OF_DOCUMENTS_TO_CREATE).fill(null).map((_, index) => ({
+      new Array(NUMBER_OF_DOCUMENTS_TO_CREATE).fill(null).map((_, index) => ([
         index,
-        userId1: userIdList[index % NUMBER_OF_USERS_TO_CREATE],
-        userId2: userIdList[
+        userIdList[index % NUMBER_OF_USERS_TO_CREATE],
+        userIdList[
           (index < 1 ? NUMBER_OF_USERS_TO_CREATE - 1 : index - 1) %
           NUMBER_OF_USERS_TO_CREATE
         ],
-      })))
+      ])))
     .then(docDataList =>
       docDataList.map(item =>
-        createDocumentFromTemplate(item.userId1, item.userId2, item.index)))
+        createDocumentFromTemplate(...item)))
     .then(docObjectList => Document.create(docObjectList))
     .then(created => created.map(document => document.id))
     .catch(err => err);
