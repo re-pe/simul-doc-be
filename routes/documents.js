@@ -34,8 +34,8 @@ router.post('/', validator(DocumentBodySchema), (req, res, next) => {
 
 router.delete('/:docId', (req, res, next) => {
   Document.findByIdAndRemove(req.params.docId)
-    .then(() => {
-      res.sendStatus(204);
+    .then((result) => {
+      res.send(result);
     })
     .catch(next);
 });
