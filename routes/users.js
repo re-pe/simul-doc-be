@@ -28,8 +28,8 @@ router.post('/', validator(UserBodySchema), (req, res, next) => {
 
 router.delete('/:usrId', (req, res, next) => {
   User.findByIdAndRemove(req.params.usrId)
-    .then(() => {
-      res.sendStatus(204);
+    .then((result) => {
+      res.send(result);
     })
     .catch(next);
 });
