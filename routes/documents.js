@@ -24,8 +24,11 @@ router.get('/:docId', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/', validator(DocumentBodySchema), (req, res, next) => {
-  Document.create(req.body)
+router.post('/', validator(DocumentBodySchema), async (req, res, next) => {
+  const id = await Document.create(req.body)
+    .then(document => document.id)
+    .catch(next);
+  Document.findById(id)
     .populate('owner', '-createdAt -updatedAt')
     .populate('authors', '-createdAt -updatedAt')
     .then((document) => {
