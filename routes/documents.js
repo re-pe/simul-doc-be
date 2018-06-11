@@ -26,6 +26,8 @@ router.get('/:docId', (req, res, next) => {
 
 router.post('/', validator(DocumentBodySchema), (req, res, next) => {
   Document.create(req.body)
+    .populate('owner', '-createdAt -updatedAt')
+    .populate('authors', '-createdAt -updatedAt')
     .then((document) => {
       res.send(document);
     })
