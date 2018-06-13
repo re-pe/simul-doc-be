@@ -21,7 +21,6 @@ const UserSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    select: false,
   },
   password: {
     type: String,
@@ -35,7 +34,7 @@ const UserSchema = new Schema({
 UserSchema.static('authenticate', function authenticate(username, password, callback) {
   return this.findOne({
     email: username,
-  }).then((user) => {
+  }, 'password').then((user) => {
     bcrypt.compare(password, user.password)
       .then(result => callback(result ? user : null))
       .catch(() => callback(null));

@@ -12,14 +12,14 @@ router.post('/', validator(UserBodyLoginSchema), (req, res, next) => {
       err.status = 401;
       return res.status(401).send(err);
     }
-    req.session.userId = user.id;
-    res.cookie('simul-doc', user.id, { signed: true, httpOnly: true });
-    return res.send({
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    });
+    return User.findById(user.id)
+      .select('-createdAt -updatedAt -__v')
+      .then((found) => {
+        req.session.userId = found.id;
+        res.cookie('simul-doc', found.id, { signed: true, httpOnly: true });
+        return res.send(found);
+      })
+      .catch(next);
   }).catch(next);
 });
 
