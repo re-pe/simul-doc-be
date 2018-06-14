@@ -47,6 +47,7 @@ router.delete('/:docId', (req, res, next) => {
 
 router.put('/:docId', validator(DocumentBodySchema), (req, res, next) => {
   Document.findByIdAndUpdate(req.params.docId, req.body, { new: true })
+    .populate('authors', '-createdAt -updatedAt')
     .then((document) => {
       res.send(document);
     })
