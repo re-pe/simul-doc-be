@@ -2,8 +2,25 @@ const express = require('express');
 
 const router = express.Router();
 const Document = require('../models/document');
+const User = require('../models/user');
 const { DocumentBodySchema } = require('./validators/validators');
 const validator = require('express-joi-validator');
+
+const userLogged = (req, next) => {
+  const id = req.signedCookies['simul-doc'];
+  return User.findById(id)
+    .then((user) => {
+      if (!user) {
+        const err = {
+          message: 'Not authorized! Go back!',
+          status: 400,
+        };
+        return err;
+      }
+      return user;
+    })
+    .catch(next);
+};
 
 router.get('/', (req, res, next) => {
   Document.find({})
