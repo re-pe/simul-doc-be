@@ -6,53 +6,58 @@ const User = require('../models/user');
 const { DocumentBodySchema } = require('./validators/validators');
 const validator = require('express-joi-validator');
 
-const userLogged = (req, next) => {
-  const id = req.signedCookies['simul-doc'];
-  return User.findById(id)
-    .then((user) => {
-      if (!user) {
-        const err = {
-          message: 'Not authorized! Go back!',
-          status: 400,
-        };
-        return err;
-      }
-      return user;
-    })
-    .catch(next);
+const sendError = (res) => {
+  res.status(401).send({
+    message: 'User is not logged!',
+    status: 401,
+  });
+  return null;
 };
 
-router.get('/', (req, res, next) => {
-  Document.find({})
-    .select('-content')
-    .then((document) => {
-      res.send(document);
-    })
-    .catch(next);
-});
+const userLogged = (req, res) => {
+  return User.findById(req.signedCookies['simul-doc'])
+    .then(user => user || sendError(res));
+};
 
-router.get('/:docId', (req, res, next) => {
-  Document.findById(req.params.docId)
-    .populate('owner', '-createdAt -updatedAt')
-    .populate('authors', '-createdAt -updatedAt')
-    .then((document) => {
-      res.send(document);
-    })
-    .catch(next);
-});
+router.get('/', (req, res, next) =>
+  userLogged(req, res)
+    .then(user =>
+      Document.find({ owner: user.id })
+        .select('-content')
+        .then((document) => {
+          res.send(document);
+        })
+        .catch(next))
+    .catch(next));
 
-router.post('/', validator(DocumentBodySchema), async (req, res, next) => {
-  const id = await Document.create(req.body)
-    .then(document => document.id)
-    .catch(next);
-  Document.findById(id)
-    .populate('owner', '-createdAt -updatedAt')
-    .populate('authors', '-createdAt -updatedAt')
-    .then((document) => {
-      res.send(document);
+router.get('/:docId', (req, res, next) =>
+  userLogged(req, res)
+    .then(user =>
+      Document.findById(req.params.docId)
+        .populate('owner', '-createdAt -updatedAt')
+        .populate('authors', '-createdAt -updatedAt')
+        .then((document) => {
+          res.send(document);
+        })
+        .catch(next))
+    .catch(next));
+
+router.post('/', validator(DocumentBodySchema), (req, res, next) =>
+  User.findById(req.signedCookies['simul-doc'])
+    .then((user) => {
+      if (!user) {
+        return sendError(res);
+      }
+      return Document.create(req.body)
+        .then(createdDocument =>
+          Document.findById(createdDocument.id)
+            .populate('owner', '-createdAt -updatedAt')
+            .populate('authors', '-createdAt -updatedAt')
+            .then(foundDocument => res.send(foundDocument))
+            .catch(next))
+        .catch(next);
     })
-    .catch(next);
-});
+    .catch(next));
 
 router.delete('/:docId', (req, res, next) => {
   Document.findByIdAndRemove(req.params.docId)
