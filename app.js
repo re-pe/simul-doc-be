@@ -21,14 +21,14 @@ const app = express();
 app.use(session({
   secret: 'vowel either object copper',
   signed: true,
-  cookie: { secure: false },
+  cookie: { secure: true },
   resave: false,
   saveUninitialized: true,
 }));
 
 app.use('*', cors({
   origin: true,
-  withCredentials: true,
+  credentials: true,
 }));
 app.use(logger('dev'));
 app.use(express.json());
