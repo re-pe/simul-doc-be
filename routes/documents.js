@@ -14,10 +14,9 @@ const sendError = (res) => {
   return null;
 };
 
-const userLogged = (req, res) => {
-  return User.findById(req.signedCookies['simul-doc'])
+const userLogged = (req, res) =>
+  User.findById(req.signedCookies['simul-doc'])
     .then(user => user || sendError(res));
-};
 
 router.get('/', (req, res, next) =>
   userLogged(req, res).then((user) => {
@@ -75,8 +74,8 @@ router.put('/:docId', validator(DocumentBodySchema), (req, res, next) =>
   userLogged(req, res)
     .then((user) => {
       if (!user) return null;
-      return Document.findByIdAndUpdate(
-        req.params.docId, req.body, { new: true })
+      return Document
+        .findByIdAndUpdate(req.params.docId, req.body, { new: true })
         .populate('authors', '-createdAt -updatedAt')
         .then((document) => {
           res.send(document);
