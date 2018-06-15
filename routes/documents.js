@@ -35,7 +35,7 @@ router.get('/:docId', (req, res, next) =>
   userLogged(req, res)
     .then((user) => {
       if (!user) return null;
-      return Document.findById(user.id)
+      return Document.findById(req.params.docId)
         .populate('owner', '-createdAt -updatedAt')
         .populate('authors', '-createdAt -updatedAt')
         .then((document) => {
