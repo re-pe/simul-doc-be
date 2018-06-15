@@ -20,34 +20,35 @@ const userLogged = (req, res) => {
 };
 
 router.get('/', (req, res, next) =>
-  userLogged(req, res)
-    .then(user =>
-      Document.find({ owner: user.id })
-        .select('-content')
-        .then((document) => {
-          res.send(document);
-        })
-        .catch(next))
+  userLogged(req, res).then((user) => {
+    if (!user) return null;
+    return Document.find({ owner: user.id })
+      .select('-content')
+      .then((document) => {
+        res.send(document);
+      })
+      .catch(next);
+  })
     .catch(next));
 
 router.get('/:docId', (req, res, next) =>
   userLogged(req, res)
-    .then(user =>
-      Document.findById(req.params.docId)
+    .then((user) => {
+      if (!user) return null;
+      return Document.findById(user.id)
         .populate('owner', '-createdAt -updatedAt')
         .populate('authors', '-createdAt -updatedAt')
         .then((document) => {
           res.send(document);
         })
-        .catch(next))
+        .catch(next);
+    })
     .catch(next));
 
 router.post('/', validator(DocumentBodySchema), (req, res, next) =>
-  User.findById(req.signedCookies['simul-doc'])
+  userLogged(req, res)
     .then((user) => {
-      if (!user) {
-        return sendError(res);
-      }
+      if (!user) return null;
       return Document.create(req.body)
         .then(createdDocument =>
           Document.findById(createdDocument.id)
@@ -59,21 +60,28 @@ router.post('/', validator(DocumentBodySchema), (req, res, next) =>
     })
     .catch(next));
 
-router.delete('/:docId', (req, res, next) => {
-  Document.findByIdAndRemove(req.params.docId)
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(next);
-});
+router.delete('/:docId', (req, res, next) =>
+  userLogged(req, res)
+    .then((user) => {
+      if (!user) return null;
+      return Document.findByIdAndRemove(req.params.docId)
+        .then(() => {
+          res.sendStatus(204);
+        })
+        .catch(next);
+    }));
 
-router.put('/:docId', validator(DocumentBodySchema), (req, res, next) => {
-  Document.findByIdAndUpdate(req.params.docId, req.body, { new: true })
-    .populate('authors', '-createdAt -updatedAt')
-    .then((document) => {
-      res.send(document);
-    })
-    .catch(next);
-});
+router.put('/:docId', validator(DocumentBodySchema), (req, res, next) =>
+  userLogged(req, res)
+    .then((user) => {
+      if (!user) return null;
+      return Document.findByIdAndUpdate(
+        req.params.docId, req.body, { new: true })
+        .populate('authors', '-createdAt -updatedAt')
+        .then((document) => {
+          res.send(document);
+        })
+        .catch(next);
+    }));
 
 module.exports = router;
