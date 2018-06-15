@@ -2,7 +2,7 @@ const app = require('express');
 
 const router = app.Router();
 
-router.get('/', (req, res, next) => {
+router.post('/', (req, res, next) => {
   if (req.session) {
     req.session.destroy((err) => {
       if (err) {
