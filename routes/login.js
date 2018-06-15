@@ -16,7 +16,7 @@ router.post('/', validator(UserBodyLoginSchema), (req, res, next) => {
       .select('-createdAt -updatedAt -__v')
       .then((found) => {
         req.session.userId = found.id;
-        res.cookie('simul-doc', found.id, { signed: true, httpOnly: true });
+        res.cookie('simul-doc', found.id, { domain: '.localhost', signed: true, httpOnly: true });
         return res.send(found);
       })
       .catch(next);
