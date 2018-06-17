@@ -20,16 +20,12 @@ const isAuthenticated = (req, res, next) =>
     })
     .catch(next);
 
-router.get('/', (req, res, next) =>
-  userLogged(req, res).then((user) => {
-    if (!user) return null;
-    return Document.find({ owner: user.id })
-      .select('-content')
-      .then((document) => {
-        res.send(document);
-      })
-      .catch(next);
-  })
+router.get('/', isAuthenticated, (req, res, next) =>
+  Document.find({ authors: req.signedCookies['simul-doc'] })
+    .select('-content')
+    .then((document) => {
+      res.send(document);
+    })
     .catch(next));
 
 router.get('/:docId', (req, res, next) =>
