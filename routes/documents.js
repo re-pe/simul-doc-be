@@ -6,17 +6,19 @@ const User = require('../models/user');
 const { DocumentBodySchema } = require('./validators/validators');
 const validator = require('express-joi-validator');
 
-const sendError = (res) => {
+const sendError = res =>
   res.status(401).send({
     message: 'User is not logged!',
     status: 401,
   });
-  return null;
-};
 
-const userLogged = (req, res) =>
+const isAuthenticated = (req, res, next) =>
   User.findById(req.signedCookies['simul-doc'])
-    .then(user => user || sendError(res));
+    .then((user) => {
+      if (!user) return sendError(res);
+      return next();
+    })
+    .catch(next);
 
 router.get('/', (req, res, next) =>
   userLogged(req, res).then((user) => {
