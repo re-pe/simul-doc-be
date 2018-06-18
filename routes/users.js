@@ -10,6 +10,7 @@ const router = app.Router();
 
 router.get('/', (req, res, next) => {
   User.find({})
+    .select('email')
     .then(users => res.send(users))
     .catch(next);
 });
@@ -28,9 +29,7 @@ router.post('/', validator(UserBodySchema), (req, res, next) => {
 
 router.delete('/:usrId', (req, res, next) => {
   User.findByIdAndRemove(req.params.usrId)
-    .then(() => {
-      res.sendStatus(204);
-    })
+    .then(() => res.sendStatus(204))
     .catch(next);
 });
 
