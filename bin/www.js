@@ -18,10 +18,10 @@ const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 const server = http.createServer(app);
-// temporary while playing with sockets
-//-------------------------------------------------
+
+// -----socket--------------------------------
 const io = socket(server);
-//-------------------------------------------------
+// -----socket--------------------------------
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -56,32 +56,16 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-// temporary while playing with sockets
-//-------------------------------------------------
-let total = 0;
+// -----socket--------------------------------
 io.on('connection', (connectedSocket) => {
-  total += 1;
-  // emit to connected
-  connectedSocket.emit(
-    'newConnection',
-    { text: `hi from backend, u are ${total} user that currently connected` },
-  );
-  // emit to others
-  connectedSocket.broadcast.emit(
-    'newConnection',
-    { text: `new user connected, total users:${total}` },
-  );
-
-  connectedSocket.on('login', (data) => {
-    console.log(`login event emited, passed value is ${data}`);
+  connectedSocket.on('documentSelected', (data) => {
+    connectedSocket.broadcast.emit(
+      'documentSelected',
+      { text: `other user selected ${data.id}` },
+    );
   });
 
   connectedSocket.on('disconnect', () => {
-    total -= 1;
-    connectedSocket.broadcast.emit(
-      'lostConnection',
-      { text: `user disconnected, total users:${total}` },
-    );
   });
 });
-//-------------------------------------------------
+// -----socket--------------------------------
