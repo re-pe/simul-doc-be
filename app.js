@@ -4,6 +4,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -11,7 +12,6 @@ const documentsRouter = require('./routes/documents');
 const userProfile = require('./routes/profile');
 const userLogin = require('./routes/login');
 const userLogout = require('./routes/logout');
-const mongoose = require('mongoose');
 
 const mongoDB = 'mongoDb://localhost/simul-doc';
 mongoose.connect(mongoDB);
