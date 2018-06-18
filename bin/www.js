@@ -1,10 +1,9 @@
 const app = require('../app');
 const debug = require('debug')('simul-doc-be:server');
 const http = require('http');
-// temporary while playing with sockets
-//-------------------------------------------------
+// -----socket--------------------------------
 const socket = require('socket.io');
-//-------------------------------------------------
+//--------------------------------------------
 
 function normalizePort(val) {
   const port = Number(val);
@@ -18,7 +17,6 @@ const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 const server = http.createServer(app);
-
 // -----socket--------------------------------
 const io = socket(server);
 // -----socket--------------------------------
@@ -58,12 +56,20 @@ server.on('listening', onListening);
 
 // -----socket--------------------------------
 io.on('connection', (connectedSocket) => {
-  connectedSocket.on('documentSelected', (data) => {
-    connectedSocket.broadcast.emit(
-      'documentSelected',
-      { text: `other user selected ${data.id}` },
+  connectedSocket.on('joinedRoom', (data) => {
+    // didint find more elegant solution to leave previous room
+    const oldRooms = Object.keys(connectedSocket.rooms);
+    connectedSocket.leave(oldRooms);
+    connectedSocket.join(data.id);
+  });
+
+  connectedSocket.on('documentEdited', (data) => {
+    connectedSocket.to(data.id).broadcast.emit(
+      'documentEdited',
+      { text: `other user edited document same document that u are selected, now content is ${data.content}` },
     );
   });
+
 
   connectedSocket.on('disconnect', () => {
   });
