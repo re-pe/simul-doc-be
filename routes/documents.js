@@ -1,25 +1,11 @@
 const express = require('express');
+const isAuthenticated = require('./authentication/autehntication');
 
 const router = express.Router();
 const Document = require('../models/document');
-const User = require('../models/user');
 const { DocumentBodySchema } = require('./validators/validators');
 const validator = require('express-joi-validator');
 
-const sendError = res =>
-  res.status(401).send({
-    message: 'User is not logged!',
-    status: 401,
-  });
-
-
-const isAuthenticated = (req, res, next) =>
-  User.findById(req.signedCookies['simul-doc'])
-    .then((user) => {
-      if (!user) return sendError(res);
-      return next();
-    })
-    .catch(next);
 
 router.get('/', isAuthenticated, (req, res, next) =>
   Document.find({ authors: req.signedCookies['simul-doc'] })
