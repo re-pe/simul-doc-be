@@ -15,4 +15,4 @@ const isAuthenticated = (req, res, next) =>
     })
     .catch(next);
 
-export default isAuthenticated;
+module.exports = isAuthenticated;
