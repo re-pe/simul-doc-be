@@ -34,13 +34,18 @@ router.post('/', isAuthenticated, validator(DocumentBodySchema), (req, res, next
     .catch(next));
 
 router.delete('/:docId', isAuthenticated, (req, res, next) =>
-  Document.findByIdAndRemove(req.params.docId)
+  Document.findOneAndRemove({
+    _id: req.params.docId,
+    owner: req.user._id,
+  })
     .then(() => res.sendStatus(204))
     .catch(next));
 
 router.put('/:docId', isAuthenticated, validator(DocumentBodySchema), (req, res, next) =>
   Document
-    .updateOne({ _id: req.params.docId, authors: req.user._id }, req.body, { new: true })
+    .updateOne({
+      _id: req.params.docId, authors: req.user._id,
+    }, req.body, { new: true })
     .populate('authors', '-createdAt -updatedAt')
     .then(document => res.send(document))
     .catch(next));
