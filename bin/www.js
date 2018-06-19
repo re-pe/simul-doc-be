@@ -66,7 +66,7 @@ io.on('connection', (connectedSocket) => {
   connectedSocket.on('documentEdited', (data) => {
     connectedSocket.to(data.id).broadcast.emit(
       'documentEdited',
-      { text: `other user edited document same document that u are selected, now content is ${data.content}` },
+      { text: data.content },
     );
   });
 
