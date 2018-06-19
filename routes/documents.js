@@ -8,7 +8,7 @@ const validator = require('express-joi-validator');
 
 
 router.get('/', isAuthenticated, (req, res, next) =>
-  Document.find({ authors: req.signedCookies['simul-doc'] })
+  Document.find({ authors: req.user._id })
     .select('-content')
     .then((document) => {
       res.send(document);
@@ -40,7 +40,7 @@ router.delete('/:docId', isAuthenticated, (req, res, next) =>
 
 router.put('/:docId', isAuthenticated, validator(DocumentBodySchema), (req, res, next) =>
   Document
-    .findByIdAndUpdate(req.params.docId, req.body, { new: true })
+    .updateOne({ _id: req.params.docId, authors: req.user._id }, req.body, { new: true })
     .populate('authors', '-createdAt -updatedAt')
     .then(document => res.send(document))
     .catch(next));
