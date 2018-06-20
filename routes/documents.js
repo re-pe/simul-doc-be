@@ -1,28 +1,14 @@
 const express = require('express');
+const isAuthenticated = require('./authentication/autehntication');
 
 const router = express.Router();
 const Document = require('../models/document');
-const User = require('../models/user');
 const { DocumentBodySchema } = require('./validators/validators');
 const validator = require('express-joi-validator');
 
-const sendError = res =>
-  res.status(401).send({
-    message: 'User is not logged!',
-    status: 401,
-  });
-
-
-const isAuthenticated = (req, res, next) =>
-  User.findById(req.signedCookies['simul-doc'])
-    .then((user) => {
-      if (!user) return sendError(res);
-      return next();
-    })
-    .catch(next);
 
 router.get('/', isAuthenticated, (req, res, next) =>
-  Document.find({ authors: req.signedCookies['simul-doc'] })
+  Document.find({ authors: req.user.id })
     .select('-content')
     .then((document) => {
       res.send(document);
@@ -31,7 +17,10 @@ router.get('/', isAuthenticated, (req, res, next) =>
 
 
 router.get('/:docId', isAuthenticated, (req, res, next) =>
-  Document.findById(req.params.docId)
+  Document.findOne({
+    _id: req.params.docId,
+    authors: req.user.id,
+  })
     .populate('owner', '-createdAt -updatedAt')
     .populate('authors', '-createdAt -updatedAt')
     .then(document => res.send(document))
@@ -48,13 +37,19 @@ router.post('/', isAuthenticated, validator(DocumentBodySchema), (req, res, next
     .catch(next));
 
 router.delete('/:docId', isAuthenticated, (req, res, next) =>
-  Document.findByIdAndRemove(req.params.docId)
+  Document.findOneAndRemove({
+    _id: req.params.docId,
+    owner: req.user.id,
+  })
     .then(() => res.sendStatus(204))
     .catch(next));
 
 router.put('/:docId', isAuthenticated, validator(DocumentBodySchema), (req, res, next) =>
   Document
-    .findByIdAndUpdate(req.params.docId, req.body, { new: true })
+    .findOneAndUpdate({
+      _id: req.params.docId, authors: req.user.id,
+    }, req.body, { new: true })
+    .populate('owner', '-createdAt -updatedAt')
     .populate('authors', '-createdAt -updatedAt')
     .then(document => res.send(document))
     .catch(next));
