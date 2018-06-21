@@ -1,9 +1,8 @@
 const app = require('../app');
 const debug = require('debug')('simul-doc-be:server');
 const http = require('http');
-// -----socket--------------------------------
-const socket = require('socket.io');
-//--------------------------------------------
+
+const { listenSocket } = require('../socket/socket');
 
 function normalizePort(val) {
   const port = Number(val);
@@ -17,9 +16,9 @@ const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 const server = http.createServer(app);
-// -----socket--------------------------------
-const io = socket(server);
-// -----socket--------------------------------
+
+listenSocket(server);
+
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -53,25 +52,3 @@ function onListening() {
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-
-// -----socket--------------------------------
-io.on('connection', (connectedSocket) => {
-  connectedSocket.on('joinedRoom', (data) => {
-    // didint find more elegant solution to leave previous room
-    const oldRooms = Object.keys(connectedSocket.rooms);
-    connectedSocket.leave(oldRooms);
-    connectedSocket.join(data.id);
-  });
-
-  connectedSocket.on('documentEdited', (data) => {
-    connectedSocket.to(data.id).broadcast.emit(
-      'documentEdited',
-      { text: data.content },
-    );
-  });
-
-
-  connectedSocket.on('disconnect', () => {
-  });
-});
-// -----socket--------------------------------
